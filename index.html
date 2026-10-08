@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Hay algo para ti</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main id="app" data-bg="night" data-scene="scene-gift">
+
+  <!-- ============ FONDOS ============ -->
+  <div class="bg bg-night" aria-hidden="true"></div>
+
+  <div class="bg bg-sky" aria-hidden="true">
+    <div class="sun">
+      <div class="sun-rays"></div>
+      <div class="sun-core"></div>
+    </div>
+
+    <!-- nubes tranquilas (vaivén lento) -->
+    <div class="clouds">
+      <div class="cloud cloud-far   f1"></div>
+      <div class="cloud cloud-far   f2"></div>
+      <div class="cloud cloud-mid   m1"></div>
+      <div class="cloud cloud-mid   m2"></div>
+      <div class="cloud cloud-near  n1"></div>
+      <div class="cloud cloud-near  n2"></div>
+    </div>
+
+    <!-- nubes que pasan rápido mientras Cinnamoroll vuela -->
+    <div class="flyclouds">
+      <i class="cloud" style="--s:24px; top:14%; --sp:8s;  --dl:-1s;  --op:.95"></i>
+      <i class="cloud" style="--s:14px; top:26%; --sp:13s; --dl:-6s;  --op:.7"></i>
+      <i class="cloud" style="--s:30px; top:62%; --sp:7s;  --dl:-3s;  --op:.96"></i>
+      <i class="cloud" style="--s:12px; top:44%; --sp:15s; --dl:-9s;  --op:.55"></i>
+      <i class="cloud" style="--s:20px; top:78%; --sp:9s;  --dl:-5s;  --op:.9"></i>
+      <i class="cloud" style="--s:16px; top:8%;  --sp:12s; --dl:-10s; --op:.75"></i>
+      <i class="cloud" style="--s:26px; top:36%; --sp:8.5s;--dl:-7s;  --op:.92"></i>
+      <i class="streak" style="top:30%; --w:24vw; --sp:2.4s; --dl:-.4s"></i>
+      <i class="streak" style="top:52%; --w:32vw; --sp:2s;   --dl:-1.2s"></i>
+      <i class="streak" style="top:68%; --w:20vw; --sp:2.8s; --dl:-.9s"></i>
+      <i class="streak" style="top:20%; --w:28vw; --sp:2.2s; --dl:-1.7s"></i>
+    </div>
+  </div>
+
+
+  <!-- ============ MUNDO: MONTAÑA + COFRE ============ -->
+  <div class="world">
+    <div class="mountain" id="mountain">
+
+      <!-- Dibujo de la montaña -->
+      <svg class="mountain-svg" viewBox="0 0 400 440" aria-hidden="true">
+        <defs>
+          <linearGradient id="m-rock" gradientUnits="userSpaceOnUse" x1="0" y1="160" x2="0" y2="440">
+            <stop offset="0"   stop-color="#d9dfe8"/>
+            <stop offset=".18" stop-color="#bcc7d1"/>
+            <stop offset=".36" stop-color="#a9cba6"/>
+            <stop offset=".68" stop-color="#88c595"/>
+            <stop offset="1"   stop-color="#6fb582"/>
+          </linearGradient>
+          <linearGradient id="m-far" gradientUnits="userSpaceOnUse" x1="0" y1="240" x2="0" y2="440">
+            <stop offset="0" stop-color="#d3e3f4"/>
+            <stop offset="1" stop-color="#b5cfe7"/>
+          </linearGradient>
+          <symbol id="m-pine" viewBox="0 0 24 40">
+            <rect x="10.4" y="32" width="3.2" height="8" rx="1" fill="#6b4a2e"/>
+            <polygon points="12,17 0,34 24,34" fill="#4a9163"/>
+            <polygon points="12,9 2,25 22,25" fill="#58a874"/>
+            <polygon points="12,1 4,16 20,16" fill="#66b883"/>
+            <polygon points="12,17 24,34 12,34" fill="#fff" opacity=".12"/>
+            <polygon points="12,9 22,25 12,25" fill="#fff" opacity=".12"/>
+            <polygon points="12,1 20,16 12,16" fill="#fff" opacity=".14"/>
+          </symbol>
+        </defs>
+
+        <!-- montañas lejanas -->
+        <path d="M-700 440 L-700 332 C-560 318 -470 300 -380 282 C-320 270 -270 276 -220 292 C-160 312 -110 292 -60 300 C-20 285 20 262 52 256 C82 262 108 290 150 330 L200 440Z" fill="url(#m-far)" opacity=".9"/>
+        <path d="M1100 440 L1100 330 C980 318 880 300 790 284 C730 274 680 280 630 296 C570 316 510 296 460 290 C420 275 385 252 350 246 C322 252 296 278 250 330 L200 440Z" fill="url(#m-far)" opacity=".9"/>
+        <path d="M38 262 L52 256 L66 263 L58 271 L52 266 L46 272Z" fill="#fff" opacity=".9"/>
+        <path d="M336 252 L350 246 L364 253 L356 261 L350 256 L344 262Z" fill="#fff" opacity=".9"/>
+
+        <!-- montaña principal -->
+        <path d="M-30 440 C20 400 60 330 105 262 C128 226 136 198 146 182 C168 164 232 164 254 182 C264 198 272 226 295 262 C340 330 380 400 430 440 Z" fill="url(#m-rock)"/>
+        <!-- lado en sombra -->
+        <path d="M-30 440 C20 400 60 330 105 262 C128 226 136 198 146 182 C160 170 180 165 198 165 C204 240 210 340 214 440 Z" fill="#2e4e80" opacity=".18"/>
+        <!-- lado iluminado -->
+        <path d="M198 165 C218 165 240 170 254 182 C264 198 272 226 295 262 C340 330 380 400 430 440 L214 440 C210 340 204 240 198 165 Z" fill="#fff6d0" opacity=".2"/>
+        <!-- vetas de roca -->
+        <g fill="none" stroke="#5a6c88" stroke-opacity=".3" stroke-width="1.6" stroke-linecap="round">
+          <path d="M150 202 C168 196 184 200 198 194"/>
+          <path d="M132 234 C160 222 196 230 226 216"/>
+          <path d="M118 264 C150 252 200 260 244 242"/>
+          <path d="M262 206 C252 215 240 215 232 223"/>
+          <path d="M276 238 C262 246 250 244 240 252"/>
+        </g>
+        <!-- nieve en los hombros -->
+        <path d="M146 192 C156 186 164 190 170 198 C162 197 154 200 146 198Z" fill="#fff" opacity=".85"/>
+        <path d="M254 192 C244 186 236 190 230 198 C238 197 246 200 254 198Z" fill="#fff" opacity=".85"/>
+
+        <!-- sendero -->
+        <path d="M262 440 C318 408 236 384 222 346 C208 308 256 290 232 258 C216 236 206 214 204 190" fill="none" stroke="#f3e9cf" stroke-width="6" stroke-linecap="round" opacity=".8"/>
+        <path d="M262 440 C318 408 236 384 222 346 C208 308 256 290 232 258 C216 236 206 214 204 190" fill="none" stroke="#d8c9a4" stroke-width="1" stroke-linecap="round" stroke-dasharray="1 8" opacity=".7"/>
+
+        <!-- pinos (de arriba hacia abajo) -->
+        <use href="#m-pine" x="128" y="228" width="11" height="18"/>
+        <use href="#m-pine" x="262" y="230" width="11" height="18"/>
+        <use href="#m-pine" x="148" y="214" width="9"  height="15"/>
+        <use href="#m-pine" x="86"  y="292" width="17" height="28"/>
+        <use href="#m-pine" x="290" y="288" width="16" height="27"/>
+        <use href="#m-pine" x="110" y="316" width="21" height="35"/>
+        <use href="#m-pine" x="268" y="322" width="21" height="35"/>
+        <use href="#m-pine" x="68"  y="342" width="24" height="40"/>
+        <use href="#m-pine" x="316" y="346" width="24" height="40"/>
+        <use href="#m-pine" x="132" y="348" width="20" height="33"/>
+        <use href="#m-pine" x="240" y="388" width="22" height="37"/>
+        <use href="#m-pine" x="52"  y="390" width="28" height="47"/>
+        <use href="#m-pine" x="296" y="380" width="26" height="43"/>
+        <use href="#m-pine" x="104" y="384" width="26" height="43"/>
+        <use href="#m-pine" x="344" y="398" width="28" height="47"/>
+        <use href="#m-pine" x="150" y="402" width="22" height="37"/>
+
+        <!-- meseta de la cima -->
+        <path d="M140 178 C150 197 250 197 260 178 C250 189 150 189 140 178Z" fill="#8a9f8c"/>
+        <ellipse cx="200" cy="175" rx="60" ry="12" fill="#9fd48a"/>
+        <ellipse cx="200" cy="172" rx="54" ry="9"  fill="#b8e69e"/>
+        <g>
+          <circle cx="152" cy="176" r="2.2" fill="#fff"/>
+          <circle cx="160" cy="171" r="2"   fill="#ffd0e0"/>
+          <circle cx="246" cy="176" r="2.2" fill="#fff"/>
+          <circle cx="240" cy="171" r="2"   fill="#fff3a0"/>
+          <circle cx="170" cy="180" r="1.8" fill="#fff3a0"/>
+          <circle cx="232" cy="181" r="1.8" fill="#ffd0e0"/>
+          <path d="M156 175 v-7 M236 174 v-7" stroke="#4f9a6b" stroke-width="1.4" stroke-linecap="round"/>
+          <ellipse cx="156" cy="166" rx="2.7" ry="3.5" fill="#f27ba8"/>
+          <ellipse cx="236" cy="165" rx="2.7" ry="3.5" fill="#ffd54a"/>
+        </g>
+
+        <!-- pasto del frente -->
+        <path d="M-400 440 L-400 412 C-300 398 -200 402 -100 410 C0 418 60 404 120 408 C200 414 260 402 330 407 C420 413 520 398 800 410 L800 440Z" fill="#78bb88"/>
+        <path d="M-100 410 C0 418 60 404 120 408 C200 414 260 402 330 407" fill="none" stroke="#a6dca8" stroke-width="2" opacity=".7"/>
+        <circle cx="66"  cy="414" r="10" fill="#5fa874"/>
+        <circle cx="80"  cy="418" r="8"  fill="#6bb47f"/>
+        <circle cx="336" cy="416" r="11" fill="#5fa874"/>
+        <circle cx="322" cy="420" r="8"  fill="#6bb47f"/>
+      </svg>
+
+      <!-- Cofre: parte de atrás (interior de la tapa, luz y sombra) -->
+      <div class="chest-part chest-back" aria-hidden="true">
+        <span class="chest-glow"></span>
+        <span class="chest-beam"></span>
+        <svg viewBox="0 0 260 230">
+          <defs>
+            <linearGradient id="c-wood" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#a06739"/><stop offset=".55" stop-color="#83502a"/><stop offset="1" stop-color="#5f3718"/>
+            </linearGradient>
+            <linearGradient id="c-wood-lid" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#b3764a"/><stop offset=".6" stop-color="#93592f"/><stop offset="1" stop-color="#7a4624"/>
+            </linearGradient>
+            <linearGradient id="c-gold" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#a98230"/><stop offset=".42" stop-color="#f8e7a6"/><stop offset=".7" stop-color="#d4ab47"/><stop offset="1" stop-color="#a07a28"/>
+            </linearGradient>
+            <linearGradient id="c-lining" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#9c3047"/><stop offset="1" stop-color="#5b1627"/>
+            </linearGradient>
+            <radialGradient id="c-inner" cx="50%" cy="100%" r="80%">
+              <stop offset="0" stop-color="#fffbe0"/><stop offset=".5" stop-color="#ffd980"/><stop offset="1" stop-color="#b8701a"/>
+            </radialGradient>
+            <clipPath id="c-lidclip"><path d="M22 108 L22 84 C22 36 62 12 130 12 C198 12 238 36 238 84 L238 108 Z"/></clipPath>
+          </defs>
+          <ellipse cx="130" cy="212" rx="114" ry="10" fill="#2f5a3c" opacity=".45"/>
+          <!-- tapa abierta (se ve por dentro) -->
+          <g class="lid-back">
+            <path d="M34 106 L34 90 C34 60 70 42 130 42 C190 42 226 60 226 90 L226 106 Z" fill="url(#c-lining)" stroke="url(#c-gold)" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M50 100 L50 90 C50 70 80 56 130 56 C180 56 210 70 210 90 L210 100" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="3"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Ramo (sale del cofre) -->
+      <div class="bouquet" id="bouquet">
+        <div class="bouquet-float">
+          <!-- PUEDES REEMPLAZAR ESTA IMAGEN: assets/tulipanes.png -->
+          <img src="assets/tulipanes.png" alt="Ramo de tulipanes de LEGO" width="800" height="1000" decoding="async">
+        </div>
+      </div>
+
+      <!-- Cofre: parte de adelante (esto es lo que se toca) -->
+      <button class="chest-part chest" id="chest" type="button" aria-label="Abrir el cofre">
+        <svg viewBox="0 0 260 230" aria-hidden="true">
+          <!-- cuerpo -->
+          <rect x="22" y="104" width="216" height="100" rx="7" fill="url(#c-wood)"/>
+          <g stroke="#3f2310" stroke-opacity=".55" stroke-width="1.6">
+            <path d="M22 129 H238 M22 154 H238 M22 179 H238"/>
+          </g>
+          <g stroke="#d49a66" stroke-opacity=".28" stroke-width="1.2">
+            <path d="M22 131 H238 M22 156 H238 M22 181 H238"/>
+          </g>
+          <g fill="none" stroke="#4a2810" stroke-opacity=".35" stroke-width="1.2" stroke-linecap="round">
+            <path d="M80 116 q16 -3 32 0"/><path d="M150 140 q18 -3 36 0"/><path d="M70 165 q14 -3 28 0"/>
+            <path d="M160 190 q14 -3 28 0"/><path d="M96 142 q10 -2 20 0"/>
+          </g>
+          <rect x="22" y="192" width="216" height="12" rx="4" fill="#4a2a14"/>
+          <!-- herrajes -->
+          <g>
+            <rect x="44"  y="104" width="24" height="100" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+            <rect x="192" y="104" width="24" height="100" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+            <rect x="22"  y="104" width="10" height="100" rx="3" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+            <rect x="228" y="104" width="10" height="100" rx="3" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+            <g fill="#8a6a22" stroke="#fff3c0" stroke-opacity=".6" stroke-width=".8">
+              <circle cx="56" cy="118" r="3"/><circle cx="56" cy="154" r="3"/><circle cx="56" cy="190" r="3"/>
+              <circle cx="204" cy="118" r="3"/><circle cx="204" cy="154" r="3"/><circle cx="204" cy="190" r="3"/>
+            </g>
+          </g>
+          <rect x="22" y="100" width="216" height="9" rx="3" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+          <rect x="116" y="108" width="28" height="22" rx="4" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+          <!-- boca iluminada (se ve al abrir) -->
+          <ellipse class="mouth" cx="130" cy="103" rx="100" ry="9" fill="url(#c-inner)"/>
+
+          <!-- tapa cerrada -->
+          <g class="lid-front">
+            <g clip-path="url(#c-lidclip)">
+              <rect x="0" y="0" width="260" height="120" fill="url(#c-wood-lid)"/>
+              <g fill="none" stroke="#3f2310" stroke-opacity=".5" stroke-width="1.5">
+                <path d="M22 62 C 60 34 200 34 238 62"/>
+                <path d="M22 84 C 60 58 200 58 238 84"/>
+              </g>
+              <g fill="none" stroke="#d49a66" stroke-opacity=".25" stroke-width="1.1">
+                <path d="M22 64 C 60 36 200 36 238 64"/>
+                <path d="M22 86 C 60 60 200 60 238 86"/>
+              </g>
+              <rect x="44"  y="0" width="24" height="120" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+              <rect x="192" y="0" width="24" height="120" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+              <g fill="#8a6a22" stroke="#fff3c0" stroke-opacity=".6" stroke-width=".8">
+                <circle cx="56" cy="82" r="3"/><circle cx="204" cy="82" r="3"/>
+                <circle cx="56" cy="52" r="2.6"/><circle cx="204" cy="52" r="2.6"/>
+              </g>
+              <ellipse cx="86" cy="42" rx="58" ry="16" transform="rotate(-14 86 42)" fill="#fff" opacity=".13"/>
+            </g>
+            <path d="M22 108 L22 84 C22 36 62 12 130 12 C198 12 238 36 238 84 L238 108 Z" fill="none" stroke="#3a200f" stroke-width="2.2" stroke-linejoin="round"/>
+            <rect x="22" y="98" width="216" height="11" rx="3" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1"/>
+            <!-- cerradura -->
+            <rect x="112" y="86" width="36" height="34" rx="6" fill="url(#c-gold)" stroke="#6a4c14" stroke-width="1.2"/>
+            <circle cx="130" cy="100" r="4.6" fill="#2b190b"/>
+            <path d="M127.4 102 L132.6 102 L134.4 113 L125.6 113Z" fill="#2b190b"/>
+          </g>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ============ ESCENA 1: REGALO ============ -->
+  <section class="scene active" id="scene-gift" aria-label="Un regalo">
+    <p class="caption caption-dark rv" style="--d:1.1s">Hay algo para ti...</p>
+
+    <div class="gift-stage rv" style="--d:.3s">
+      <div class="gift-aura" aria-hidden="true"></div>
+      <button class="gift" id="gift" type="button" aria-label="Abrir el regalo">
+        <span class="gift-beam"></span>
+        <svg viewBox="0 0 240 250" aria-hidden="true">
+          <defs>
+            <linearGradient id="g-box" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#cf6f8d"/><stop offset=".3" stop-color="#f3b4c8"/><stop offset=".62" stop-color="#ea9db6"/><stop offset="1" stop-color="#c25b7a"/>
+            </linearGradient>
+            <linearGradient id="g-top" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#f4bccd"/><stop offset=".5" stop-color="#fdd9e4"/><stop offset="1" stop-color="#eaa2b9"/>
+            </linearGradient>
+            <linearGradient id="g-rib" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#d9c58f"/><stop offset=".42" stop-color="#fff8e4"/><stop offset="1" stop-color="#e2cf9a"/>
+            </linearGradient>
+            <linearGradient id="g-shade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#5a0f2c" stop-opacity="0"/><stop offset="1" stop-color="#5a0f2c" stop-opacity=".3"/>
+            </linearGradient>
+            <linearGradient id="g-lidshadow" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#5a0f2c" stop-opacity=".38"/><stop offset="1" stop-color="#5a0f2c" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="g-blur"><feGaussianBlur stdDeviation="4"/></filter>
+          </defs>
+
+          <ellipse cx="120" cy="236" rx="96" ry="9" fill="#000" opacity=".7" filter="url(#g-blur)"/>
+
+          <!-- caja -->
+          <rect x="34" y="112" width="172" height="120" rx="8" fill="url(#g-box)"/>
+          <rect x="106" y="112" width="28" height="120" fill="url(#g-rib)"/>
+          <rect x="34" y="112" width="172" height="120" rx="8" fill="url(#g-shade)"/>
+          <path d="M34 124 C34 118 38 114 44 114 L 60 114 L 34 200 Z" fill="#fff" opacity=".1"/>
+
+          <!-- borde de arriba (se ve al abrir) -->
+          <path d="M34 112 L206 112 L198 100 L42 100 Z" fill="#b34d6d"/>
+          <path d="M106 112 L134 112 L132 100 L108 100 Z" fill="#d9c58f"/>
+          <path class="gift-glowtop" d="M42 100 L198 100 L206 112 L34 112 Z" fill="#fff6d8"/>
+
+          <!-- tapa -->
+          <g class="gift-lid">
+            <rect x="34" y="116" width="172" height="12" fill="url(#g-lidshadow)"/>
+            <path d="M24 84 L216 84 L204 68 L36 68 Z" fill="url(#g-top)"/>
+            <path d="M108 84 L132 84 L130 68 L110 68 Z" fill="url(#g-rib)"/>
+            <rect x="24" y="84" width="192" height="36" rx="6" fill="url(#g-box)"/>
+            <rect x="106" y="84" width="28" height="36" fill="url(#g-rib)"/>
+            <rect x="24" y="108" width="192" height="12" rx="6" fill="#5a0f2c" opacity=".18"/>
+            <!-- lazo -->
+            <path d="M116 72 C108 88 98 100 92 114 L106 110 L118 90 Z" fill="url(#g-rib)" stroke="#cdb77f" stroke-width="1.2"/>
+            <path d="M124 72 C132 88 142 100 148 114 L134 110 L122 90 Z" fill="url(#g-rib)" stroke="#cdb77f" stroke-width="1.2"/>
+            <path d="M120 70 C100 26 50 26 58 56 C62 74 98 76 120 70 Z" fill="url(#g-rib)" stroke="#cdb77f" stroke-width="1.4"/>
+            <path d="M114 68 C100 46 76 42 72 54 C70 64 94 68 114 68 Z" fill="#d6c186" opacity=".75"/>
+            <path d="M120 70 C140 26 190 26 182 56 C178 74 142 76 120 70 Z" fill="url(#g-rib)" stroke="#cdb77f" stroke-width="1.4"/>
+            <path d="M126 68 C140 46 164 42 168 54 C170 64 146 68 126 68 Z" fill="#d6c186" opacity=".75"/>
+            <ellipse cx="120" cy="71" rx="12" ry="9.5" fill="url(#g-rib)" stroke="#cdb77f" stroke-width="1.4"/>
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <button class="btn btn-dark rv" id="btn-gift" type="button" style="--d:1.9s">Ábrelo</button>
+  </section>
+
+
+  <!-- ============ ESCENA 2: CIELO (Cinnamoroll aparece) ============ -->
+  <section class="scene" id="scene-sky" aria-label="Cinnamoroll">
+    <p class="caption caption-sky rv" style="--d:2.4s">El Cinna te quiere enseñar tu regalo!!!</p>
+    <button class="btn btn-sky after-ready" id="btn-follow" type="button">Vamos</button>
+  </section>
+
+
+  <!-- ============ ESCENA 3: VUELO ============ -->
+  <section class="scene" id="scene-flight" aria-label="Volando">
+    <p class="caption caption-sky caption-glow rv" id="flight-caption" style="--d:2.6s">Ya casi llegamos...</p>
+  </section>
+
+
+  <!-- ============ ESCENA 4: COFRE EN LA MONTAÑA + MENSAJE ============ -->
+  <section class="scene" id="scene-chest" aria-label="El cofre">
+    <div class="bottom-slot">
+      <div class="panel cta rv" id="cta" style="--d:.5s">
+        <p class="caption caption-sky">Creo que el Cinnamoroll encontró algo pa ti</p>
+        <button class="btn btn-sky" id="btn-chest" type="button">Abrir el cofre</button>
+      </div>
+
+      <!-- ============ MENSAJE FINAL (edita estos textos) ============ -->
+      <div class="panel final" id="final">
+        <p class="final-1">Encontraste el regalo, Aricilla!!!.</p>
+        <p class="final-2">Espero que te haya gustado la sorpresa!!.</p>
+        <button class="btn-link" id="btn-restart" type="button">Volver a empezar</button>
+      </div>
+      <!-- ============================================================ -->
+    </div>
+  </section>
+
+
+  <!-- ============ CINNAMOROLL (acompaña toda la historia) ============ -->
+  <div class="actor" id="actor">
+    <button class="actor-btn" id="cinna" type="button" aria-label="Seguir a Cinnamoroll">
+      <span class="actor-float">
+        <!-- PUEDES REEMPLAZAR ESTA IMAGEN: assets/cinnamoroll.png -->
+        <img src="assets/cinnamoroll.png" alt="Cinnamoroll" width="660" height="594" decoding="async">
+      </span>
+    </button>
+    <span class="actor-shadow" aria-hidden="true"></span>
+  </div>
+
+  <!-- Capa de destellos y luz (por encima de todo, no recibe toques) -->
+  <div class="bloom" id="bloom" aria-hidden="true"></div>
+  <div class="fx" id="fx" aria-hidden="true"></div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

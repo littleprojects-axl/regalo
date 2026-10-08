@@ -1,0 +1,502 @@
+/* =====================================================================
+   VARIABLES  (aquí cambias colores y velocidades principales)
+   ===================================================================== */
+:root {
+  /* --- Velocidades --- */
+  --fade-bg: 2600ms;          /* negro -> cielo */
+  --fade-scene: 1400ms;       /* aparición/desaparición de los textos de cada escena */
+  --nubes: 90s;               /* vaivén de las nubes tranquilas (más = más lento) */
+  --flotar: 5.5s;             /* flotación de Cinnamoroll */
+  --flotar-ramo: 6.5s;        /* flotación del ramo */
+  --montana: 7s;              /* cuánto tarda la montaña en aparecer durante el vuelo */
+  --mov-actor: 2.8s;          /* cuánto tarda Cinnamoroll en cambiar de lugar */
+
+  /* --- Colores --- */
+  --texto-oscuro: #f3e8ea;    /* texto sobre fondo negro */
+  --texto-cielo: #2b5b86;     /* texto sobre el cielo */
+
+  --ease-suave: cubic-bezier(.4, 0, .2, 1);
+  --ease-salida: cubic-bezier(.16, .84, .3, 1);
+}
+
+/* =====================================================================
+   BASE
+   ===================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; background: #000; }
+
+body {
+  overflow: hidden;
+  font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; border-radius: 14px; }
+
+img { display: block; max-width: 100%; -webkit-user-drag: none; user-select: none; pointer-events: none; }
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Al reiniciar se apagan transiciones y animaciones un instante */
+#app.resetting *, #app.resetting *::before, #app.resetting *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* =====================================================================
+   FONDOS  (el cielo se queda para el resto de la historia)
+   ===================================================================== */
+.bg {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--fade-bg) var(--ease-suave);
+}
+.bg-night { opacity: 1; background: radial-gradient(ellipse at 50% 56%, #1a1218 0%, #09070b 46%, #000 82%); }
+.bg-sky { background: linear-gradient(180deg, #a2d4f4 0%, #c7e7f9 55%, #e8f5fd 100%); overflow: hidden; }
+#app[data-bg="sky"] .bg-sky { opacity: 1; }
+
+/* ---------- Sol ---------- */
+.sun {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 4vh);
+  right: 6vw;
+  width: clamp(84px, 22vmin, 160px);
+  aspect-ratio: 1;
+}
+.sun-core {
+  position: absolute; inset: 22%; border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, #fffef2 0%, #fff3b8 55%, #ffe58f 100%);
+  box-shadow: 0 0 0 .8vmin rgba(255, 244, 190, .35), 0 0 7vmin 3vmin rgba(255, 238, 170, .65);
+}
+.sun-rays {
+  position: absolute; inset: -55%; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 250, 215, .36) 0 3.2deg, rgba(255, 250, 215, 0) 3.2deg 20deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 14%, #000 26%, transparent 66%);
+          mask-image: radial-gradient(circle, transparent 14%, #000 26%, transparent 66%);
+  animation: girar 160s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ---------- Nubes (todo en CSS) ---------- */
+.cloud {
+  position: absolute;
+  width: 8em; height: 2.5em;
+  border-radius: 999px;
+  background: #fff;
+  font-size: var(--s, 16px);
+  opacity: var(--op, 1);
+  filter: blur(var(--bl, 0px));
+  animation: vaiven calc(var(--nubes) * var(--v, 1)) ease-in-out var(--dl, 0s) infinite alternate;
+}
+.cloud::before, .cloud::after { content: ""; position: absolute; background: #fff; border-radius: 50%; }
+.cloud::before { width: 3.7em; height: 3.7em; left: 1.2em; top: -1.7em; }
+.cloud::after  { width: 4.6em; height: 4.6em; left: 3.2em; top: -2.4em; }
+
+.cloud-far  { --s: 10px; --op: .55; --bl: 1px; --v: 1.5; }
+.cloud-mid  { --s: 16px; --op: .8;  --v: 1.1; }
+.cloud-near { --s: 26px; --op: .96; --v: .8; }
+
+.f1 { top: 22%; left: 6%;  --dl: -10s; }
+.f2 { top: 34%; left: 62%; --dl: -34s; }
+.m1 { top: 14%; left: 14%; --dl: -22s; }
+.m2 { top: 44%; left: 70%; --dl: -48s; }
+.n1 { top: 30%; left: -8%; --dl: -5s; }
+.n2 { top: 52%; left: 52%; --dl: -40s; }
+
+@keyframes vaiven { from { transform: translateX(-9vw); } to { transform: translateX(9vw); } }
+
+.clouds { position: absolute; inset: 0; transition: transform 11s var(--ease-suave); }
+#app[data-flight="on"] .clouds,
+#app[data-flight="arrive"] .clouds { transform: translateY(24dvh); }
+
+/* Nubes y rayitas que pasan rápido durante el vuelo */
+.flyclouds { position: absolute; inset: 0; opacity: 0; transition: opacity 2.2s var(--ease-suave); }
+#app[data-flight="on"] .flyclouds { opacity: 1; }
+
+.flyclouds .cloud { left: 0; animation: none; }
+#app[data-flight="on"] .flyclouds .cloud,
+#app[data-flight="arrive"] .flyclouds .cloud { animation: pasar var(--sp) linear var(--dl) infinite; }
+
+.streak {
+  position: absolute; left: 0;
+  width: var(--w); height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.9), rgba(255,255,255,0));
+  opacity: .55;
+  animation: none;
+}
+#app[data-flight="on"] .streak,
+#app[data-flight="arrive"] .streak { animation: pasar var(--sp) linear var(--dl) infinite; }
+
+@keyframes pasar {
+  from { transform: translateX(108vw); }
+  to   { transform: translateX(-70vw); }
+}
+
+/* =====================================================================
+   ESCENAS (sólo contienen textos y botones)
+   ===================================================================== */
+.scene {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(18px, 4.2dvh, 40px);
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 22px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  opacity: 0; visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--fade-scene) var(--ease-suave), visibility 0s linear var(--fade-scene);
+}
+.scene.active { opacity: 1; visibility: visible; transition-delay: 0s; }
+
+/* Sólo los botones reciben toques: así la montaña y el cofre quedan accesibles debajo */
+.scene.active :is(.gift, .btn, .btn-link) { pointer-events: auto; }
+.scene.active:not(.ready) .after-ready { pointer-events: none; }
+.final:not(.show) .btn-link { pointer-events: none !important; }
+
+.rv {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 1.4s var(--ease-suave), transform 1.4s var(--ease-salida);
+  transition-delay: var(--d, 0s);
+}
+.scene.active .rv { opacity: 1; transform: none; }
+
+.after-ready {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 1.2s var(--ease-suave), transform 1.2s var(--ease-salida);
+}
+.scene.ready .after-ready { opacity: 1; transform: none; }
+
+/* ---------- Texto y botones ---------- */
+.caption {
+  margin: 0; max-width: 20ch; text-align: center;
+  font-size: clamp(1.7rem, 7vw, 2.3rem); font-style: italic; font-weight: 500;
+  line-height: 1.22; letter-spacing: .01em;
+}
+.caption-dark { color: var(--texto-oscuro); }
+.caption-sky  { color: var(--texto-cielo); }
+.caption-glow { text-shadow: 0 0 18px rgba(255,255,255,.9), 0 0 4px rgba(255,255,255,.8); }
+
+.btn {
+  min-width: 11.5rem; min-height: 54px;
+  padding: .62em 2.2em .7em;
+  border-radius: 999px;
+  font-size: 1.4rem; font-weight: 600; letter-spacing: .05em;
+  transition: transform .25s var(--ease-suave), background-color .3s, box-shadow .3s, opacity 1.4s var(--ease-suave);
+}
+.btn:active { transform: scale(.97) !important; }
+
+.btn-dark { color: var(--texto-oscuro); border: 1px solid rgba(243,232,234,.38); background: rgba(255,255,255,.05); }
+.btn-sky {
+  color: var(--texto-cielo); background: #fff;
+  border: 1px solid rgba(43,91,134,.16);
+  box-shadow: 0 10px 28px rgba(60,120,170,.3);
+}
+
+.btn-link {
+  margin-top: .9rem; padding: .7em 1.2em; min-height: 48px;
+  font-size: 1.15rem; font-style: italic; letter-spacing: .03em;
+  color: var(--texto-cielo); opacity: .8;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px;
+}
+
+/* =====================================================================
+   ESCENA 1 - REGALO
+   ===================================================================== */
+.gift-stage {
+  position: relative; display: grid; place-items: center;
+  width: min(74vw, 330px); aspect-ratio: 1 / .96;
+}
+.gift-aura {
+  position: absolute; inset: -22%;
+  background: radial-gradient(circle, rgba(255,224,232,.17) 0%, rgba(255,224,232,0) 62%);
+  animation: respirar 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes respirar { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+
+.gift {
+  position: relative; display: block;
+  width: min(56vw, 240px); aspect-ratio: 240 / 250;
+  transform-origin: 50% 90%;
+}
+.gift svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.gift.shake { animation: sacudida .52s ease-in-out; }
+@keyframes sacudida {
+  0%, 100% { transform: rotate(0) translateX(0); }
+  18% { transform: rotate(-2.4deg) translateX(-3px); }
+  42% { transform: rotate(2.2deg) translateX(3px); }
+  66% { transform: rotate(-1.4deg) translateX(-2px); }
+  84% { transform: rotate(.8deg); }
+}
+
+.gift-lid {
+  transform-box: view-box; transform-origin: 120px 100px;
+  transition: transform 1.15s cubic-bezier(.3,.75,.2,1), opacity 1s var(--ease-suave) .3s;
+}
+.gift-glowtop { opacity: 0; transition: opacity .8s var(--ease-suave); }
+
+.gift-beam {
+  position: absolute; left: 50%; bottom: 60%;
+  width: 190%; height: 190%; z-index: 0;
+  transform: translateX(-50%) scaleY(.15); transform-origin: 50% 100%;
+  background: radial-gradient(ellipse 46% 68% at 50% 100%, rgba(255,250,228,.95) 0%, rgba(255,238,200,.45) 38%, rgba(255,238,200,0) 72%);
+  opacity: 0; mix-blend-mode: screen; pointer-events: none;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 20%);
+          mask-image: linear-gradient(to top, transparent 0%, #000 20%);
+  transition: opacity 1s var(--ease-suave), transform 1.4s var(--ease-salida);
+}
+.gift svg { position: relative; z-index: 1; }
+
+.gift.open .gift-lid { transform: translate(64px, -170px) rotate(24deg); opacity: 0; }
+.gift.open .gift-glowtop { opacity: .95; }
+.gift.open .gift-beam { opacity: 1; transform: translateX(-50%) scaleY(1); }
+
+/* =====================================================================
+   CINNAMOROLL (un solo personaje que viaja entre escenas)
+   ===================================================================== */
+.actor {
+  --aw: min(74vw, 44dvh, 340px);
+  --ax: 0px; --ay: 5dvh; --ar: 0deg; --as: .92;
+  position: absolute; left: 50%; top: 50%; z-index: 4;
+  width: var(--aw);
+  display: grid; justify-items: center;
+  transform: translate(-50%, -50%) translate(var(--ax), var(--ay)) rotate(var(--ar)) scale(var(--as));
+  opacity: 0; pointer-events: none;
+  transition: transform var(--mov-actor) cubic-bezier(.45, 0, .2, 1), opacity 1.6s var(--ease-suave);
+}
+.actor-btn { display: block; width: 100%; pointer-events: none; -webkit-tap-highlight-color: transparent; }
+.actor-btn:focus-visible { outline-offset: 2px; }
+.actor-float { display: block; animation: flotar var(--flotar) ease-in-out infinite; }
+.actor img { width: 100%; height: auto; filter: drop-shadow(0 6px 10px rgba(70,130,180,.22)); }
+
+.actor-shadow {
+  width: 54%; height: 14px; margin-top: 8px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(60,110,160,.32), rgba(60,110,160,0) 70%);
+  opacity: 0; transition: opacity 1.4s var(--ease-suave);
+  animation: sombra var(--flotar) ease-in-out infinite;
+}
+
+@keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes sombra { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(.82); } }
+@keyframes aletear {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-13px) rotate(1.8deg); }
+}
+
+/* Estados de Cinnamoroll: aparece, vuela, guía y se despide */
+#app[data-actor="intro"] .actor {
+  --ay: -5dvh; --as: 1; opacity: 1;
+  transition: transform 2s var(--ease-salida) .5s, opacity 1.8s var(--ease-suave) .5s;
+}
+#app[data-actor="intro"] .actor-btn { pointer-events: auto; }
+#app[data-actor="intro"] .actor-shadow { opacity: 1; transition-delay: 1.2s; }
+
+#app[data-actor="fly"] .actor { --ay: -13dvh; --as: .8; --ar: 6deg; opacity: 1; }
+#app[data-actor="fly"] .actor-float { animation: aletear 1.7s ease-in-out infinite; }
+
+#app[data-actor="guide"] .actor {
+  --ax: calc(-1 * min(27vw, 200px)); --ay: -19dvh; --as: .46; --ar: -3deg; opacity: 1;
+}
+
+#app[data-actor="bye"] .actor {
+  --ax: calc(-1 * min(16vw, 120px)); --ay: -46dvh; --as: .3; --ar: -10deg; opacity: 0;
+  transition: transform 2.6s cubic-bezier(.5, 0, .3, 1), opacity 1.8s var(--ease-suave) .4s;
+}
+
+/* =====================================================================
+   MONTAÑA Y COFRE
+   ===================================================================== */
+.world { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+
+.mountain {
+  --mw: min(118vw, 600px, 60dvh);
+  position: absolute; left: 50%; bottom: 0;
+  width: var(--mw); aspect-ratio: 400 / 440; margin-left: calc(var(--mw) / -2);
+  transform: translateY(104%);
+  transition: transform var(--montana) cubic-bezier(.3, .55, .2, 1);
+  will-change: transform;
+}
+#app[data-mountain="up"] .mountain { transform: none; }
+
+/* El pasto se extiende hacia los lados en pantallas anchas */
+.mountain::before {
+  content: ""; position: absolute; left: -100vw; right: -100vw; bottom: 0; height: 6.4%;
+  background: #78bb88;
+}
+.mountain-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* ---------- Cofre ---------- */
+.chest-part {
+  position: absolute; left: 50%; top: 18.6%;
+  width: 30%; margin-left: -15%; aspect-ratio: 260 / 230;
+}
+.chest-part svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; display: block; }
+
+.chest-back { z-index: 2; pointer-events: none; }
+.chest { z-index: 4; display: block; pointer-events: none; }
+#app[data-scene="scene-chest"] .chest { pointer-events: auto; }
+.chest:focus-visible { outline-offset: 4px; }
+
+#app[data-chest="shake"] .chest-part { animation: sacudida .52s ease-in-out; }
+
+.lid-front {
+  transform-box: view-box; transform-origin: 130px 108px;
+  transition: transform .55s cubic-bezier(.5, 0, .9, .6);
+}
+.lid-back {
+  transform-box: view-box; transform-origin: 130px 106px;
+  transform: scaleY(0);
+  transition: transform .85s cubic-bezier(.2, .9, .3, 1) .5s;
+}
+.mouth { opacity: 0; transition: opacity 1s var(--ease-suave) .3s; }
+
+#app:is([data-chest="open"], [data-chest="done"]) .lid-front { transform: scaleY(0); }
+#app:is([data-chest="open"], [data-chest="done"]) .lid-back  { transform: scaleY(1); }
+#app:is([data-chest="open"], [data-chest="done"]) .mouth     { opacity: 1; }
+
+.chest-glow {
+  position: absolute; left: 50%; top: 34%; width: 420%; aspect-ratio: 1;
+  transform: translate(-50%, -50%) scale(.3);
+  background: radial-gradient(circle, rgba(255,240,180,.85) 0%, rgba(255,226,140,.38) 30%, rgba(255,226,140,0) 62%);
+  opacity: 0; pointer-events: none;
+  transition: opacity 2.2s var(--ease-suave), transform 2.8s var(--ease-salida);
+}
+.chest-beam {
+  position: absolute; left: 50%; bottom: 52%; width: 200%; height: 270%;
+  transform: translateX(-50%) scaleY(.15); transform-origin: 50% 100%;
+  background: radial-gradient(ellipse 44% 70% at 50% 100%, rgba(255,247,214,.95) 0%, rgba(255,232,160,.5) 40%, rgba(255,232,160,0) 72%);
+  opacity: 0; pointer-events: none;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 18%);
+          mask-image: linear-gradient(to top, transparent 0%, #000 18%);
+  transition: opacity 1.2s var(--ease-suave) .3s, transform 1.8s var(--ease-salida) .3s;
+}
+#app:is([data-chest="open"], [data-chest="done"]) .chest-glow { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+#app[data-chest="done"] .chest-glow { opacity: .5; transition-duration: 2.4s; }
+#app[data-chest="open"] .chest-beam { opacity: 1; transform: translateX(-50%) scaleY(1); }
+#app[data-chest="done"] .chest-beam { opacity: .25; transform: translateX(-50%) scaleY(1); transition-duration: 2s; }
+
+/* ---------- Ramo ---------- */
+.bouquet {
+  position: absolute; left: 50%; bottom: 70.4%;
+  width: 54%; margin-left: -27%; z-index: 3;
+  pointer-events: none; opacity: 0;
+  transform: translateY(42%) scale(.3); transform-origin: 50% 100%;
+  transition: opacity 1.6s var(--ease-suave), transform 3.4s var(--ease-salida);
+}
+.bouquet.show { opacity: 1; transform: translateY(-15%) scale(1); }
+.bouquet-float { width: 100%; }
+.bouquet.show .bouquet-float { animation: flotar-ramo var(--flotar-ramo) ease-in-out 3.4s infinite; }
+@keyframes flotar-ramo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+.bouquet img { width: 100%; height: auto; filter: drop-shadow(0 10px 16px rgba(40,80,120,.28)); }
+
+/* =====================================================================
+   ESCENAS CON TEXTO: cielo, vuelo y cofre
+   ===================================================================== */
+#scene-sky { justify-content: space-between; padding-top: calc(env(safe-area-inset-top, 0px) + 16dvh); padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 11dvh); }
+#scene-sky.leaving .caption, #scene-sky.leaving .btn {
+  opacity: 0 !important; transition: opacity .7s var(--ease-suave) !important; transition-delay: 0s !important;
+}
+
+#scene-flight { justify-content: flex-start; padding-top: calc(env(safe-area-inset-top, 0px) + 17dvh); }
+#scene-flight.hide-text .caption { opacity: 0 !important; transition: opacity .8s var(--ease-suave) !important; transition-delay: 0s !important; }
+
+#scene-chest { justify-content: flex-end; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4dvh); }
+
+.bottom-slot { display: grid; justify-items: center; align-items: end; width: 100%; }
+.bottom-slot > * { grid-area: 1 / 1; }
+
+.panel {
+  width: min(88vw, 420px);
+  padding: 18px 20px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  text-align: center;
+  background: rgba(255,255,255,.84);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.95);
+  border-radius: 28px;
+  box-shadow: 0 16px 44px rgba(40,90,140,.24);
+}
+.panel .caption { max-width: 22ch; font-size: clamp(1.5rem, 6vw, 1.95rem); }
+
+#scene-chest.opened .cta {
+  opacity: 0 !important; pointer-events: none;
+  transition: opacity .7s var(--ease-suave) !important; transition-delay: 0s !important;
+}
+
+.final { color: var(--texto-cielo); gap: 0; opacity: 0; pointer-events: none; transition: opacity 1.6s var(--ease-suave); }
+.final > * { opacity: 0; transform: translateY(8px); transition: opacity 1.8s var(--ease-suave), transform 1.8s var(--ease-salida); }
+.final p { margin: 0; }
+.final-1 { font-size: clamp(1.9rem, 8vw, 2.5rem); font-style: italic; font-weight: 600; letter-spacing: .01em; }
+.final-2 { margin-top: .3em !important; font-size: clamp(1.25rem, 5vw, 1.5rem); font-weight: 500; }
+
+.final.show { opacity: 1; pointer-events: auto; }
+.final.show .final-1 { opacity: 1; transform: none; }
+.final.show .final-2 { opacity: .92; transform: none; transition-delay: 1.4s; }
+.final.show .btn-link { opacity: .8; transform: none; transition-delay: 3.2s; }
+
+/* =====================================================================
+   DESTELLOS Y LUZ (generados por script.js)
+   ===================================================================== */
+.fx, .bloom { position: absolute; z-index: 6; pointer-events: none; }
+.fx { inset: 0; overflow: hidden; }
+
+.spark {
+  position: absolute;
+  width: var(--sz, 5px); height: var(--sz, 5px);
+  margin: calc(var(--sz, 5px) / -2) 0 0 calc(var(--sz, 5px) / -2);
+  border-radius: 50%;
+  background: var(--c, #fff8dc);
+  box-shadow: 0 0 9px 2px var(--g, rgba(255,244,205,.85));
+  opacity: 0;
+  animation: destello var(--dur, 2200ms) ease-out var(--dl, 0ms) forwards;
+}
+@keyframes destello {
+  0%   { opacity: 0; transform: translate(0, 0) scale(.4); }
+  22%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1); }
+}
+
+.bloom {
+  left: 0; top: 0; width: 46vmax; height: 46vmax; margin: -23vmax 0 0 -23vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,252,238,.95) 0%, rgba(234,246,253,.72) 38%, rgba(234,246,253,0) 70%);
+  opacity: 0; transform: scale(0);
+}
+.bloom.go { animation: bloom 2800ms ease-out forwards; }
+@keyframes bloom {
+  0%   { opacity: 0; transform: scale(0); }
+  30%  { opacity: 1; }
+  100% { opacity: 0; transform: scale(2.6); }
+}
+
+/* =====================================================================
+   PANTALLAS MUY PEQUEÑAS
+   ===================================================================== */
+@media (max-height: 640px) {
+  .scene { gap: 12px; }
+  .caption { font-size: 1.6rem; }
+  .gift-stage { width: min(56vw, 250px); }
+}
+
+/* =====================================================================
+   MOVIMIENTO REDUCIDO (accesibilidad)
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .cloud, .sun-rays, .actor-float, .actor-shadow, .gift-aura, .streak,
+  .bouquet.show .bouquet-float { animation: none !important; }
+  #app[data-actor="fly"] .actor-float { animation: none !important; }
+  .gift.shake, #app[data-chest="shake"] .chest-part { animation: none !important; }
+  :root { --fade-bg: 900ms; --fade-scene: 600ms; --montana: 2.5s; --mov-actor: 1.2s; }
+}
