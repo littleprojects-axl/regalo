@@ -390,7 +390,7 @@ img { display: block; max-width: 100%; -webkit-user-drag: none; user-select: non
 /* ---------- Ramo ---------- */
 .bouquet {
   position: absolute; left: 50%; bottom: 70.4%;
-  width: 54%; margin-left: -27%; z-index: 3;
+  width: 62%; margin-left: -31%; z-index: 3;
   pointer-events: none; opacity: 0;
   transform: translateY(42%) scale(.3); transform-origin: 50% 100%;
   transition: opacity 1.6s var(--ease-suave), transform 3.4s var(--ease-salida);
